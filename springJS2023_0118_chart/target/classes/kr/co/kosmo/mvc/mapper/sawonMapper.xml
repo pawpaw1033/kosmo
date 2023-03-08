@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksawon">
+<!-- deptvo안에 sawon의 List가 있기 때문에 type ="deptvo" 이다. -->
+<resultMap type="deptvo" id="deptsawonResult">
+<id property="deptno" column="deptno" javaType="int"/>
+<result property="dname" column="dname"/>
+<!-- List<SawonVO> collection으로 지정하기 
+property ="sawon" 인 이유는? private List<SawonVO> sawon;
+-->
+<collection property="sawon" javaType="java.util.List" ofType="sawonvo">
+<id property="sabun" column="sabun" javaType="int"/>
+<result property="saname" column="saname"/>
+<result property="sajob" column="sajob"/>
+<result property="sapay" column="sapay"/>
+</collection>
+</resultMap>
+<select id="deptList" parameterType="int" resultMap="deptsawonResult">
+
+select s.sabun, s.saname, s.sajob, s.sapay, d.deptno, d.dname from sawon s, dept d
+where d.deptno =s.deptno and d.deptno=#{deptno}
+</select>
+<!-- association -->
+<resultMap type="sawonvo" id="sawonphoneResult">
+<id property="sabun" column="sabun"/>
+<result property="saname" column="saname"/>
+<result property="sajob" column="sajob"/>
+<!-- property ="sphone" getSphone()
+     column = "sabun" => s.sabun sabun
+     javaType ="sphonevo" : 참조하는 실제 vo
+ -->
+<association property="sphone" column="sabun" javaType="sphonevo">
+<id property="pnum" column="pnum"/>
+<result property="pmodel" column="pmodel"/>
+<result property="phnum" column="phnum"/>
+<result property="pdate" column="pdate"/>
+</association>
+</resultMap>
+
+<select id="sawonList" resultMap="sawonphoneResult">
+select s.sabun, s.saname, s.sajob, 
+p.pnum, p.pmodel, p.phnum,p.pdate 
+from sawon s, sawon_phone p where s.sabun = p.pnum(+)
+</select>
+
+<!-- create table sawon_px as select * from sawon where 1=0;
+create sequence sa_px_seq increment by 1 start with 1;
+create or replace PROCEDURE ps_in(
+sname in sawon_px.saname%type,
+dno in sawon_px.deptno%type,
+sjob in sawon_px.sajob%type,
+spay in sawon_px.sapay%type,
+gender in sawon_px.gender%type
+)
+is
+begin
+insert into sawon_px
+(sabun,saname,deptno,sajob,sapay,sahire,gender)
+values(sa_px_seq.nextVal,sname,dno,sjob,spay,sysdate,gender);
+end;
+/ -->
+ <insert id="procedure2" parameterType="sawonvo" statementType="CALLABLE">
+    {call ps_in(
+       #{saname},#{deptno},#{sajob},#{sapay},#{gender})
+    }
+ </insert>
+ 
+ <!-- 
+ create or replace procedure sawon_in_dept
+(v_deptno in sawon.deptno%type, c1 out SYS_REFCURSOR)
+is
+begin
+open c1 for
+select sabun,saname,sapay, deptno from sawon
+where deptno=v_deptno;
+end;
+  -->
+  <resultMap type="hashmap" id="proceMap"/>
+  <select id="procedure1" statementType="CALLABLE">
+  {call sawon_in_dept(#{deptno},#{result, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=proceMap})
+  }
+   
+  </select>
+</mapper>

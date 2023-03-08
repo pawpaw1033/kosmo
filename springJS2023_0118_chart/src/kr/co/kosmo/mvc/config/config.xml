@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+  <configuration>
+  <typeAliases>
+  <typeAlias type="kr.co.kosmo.mvc.vo.MemberDTO" alias="mvo"/>
+  <typeAlias type="kr.co.kosmo.mvc.vo.BoardDemoVO" alias="bvo"/>
+  <typeAlias type="kr.co.kosmo.mvc.vo.UpBoardDTO" alias="uvo"/>
+  <typeAlias type="kr.co.kosmo.mvc.vo.PageSearchDTO" alias="pgSvo"/>
+  <typeAlias type="kr.co.kosmo.mvc.vo.MyLoginLoggerDTO" alias="lvo"/>
+  
+  <typeAlias type="kr.co.kosmo.mvc.vo.DeptVO" alias="deptvo"/>
+  <typeAlias type="kr.co.kosmo.mvc.vo.SawonVO" alias="sawonvo"/>
+  <typeAlias type="kr.co.kosmo.mvc.vo.SawonPhoneVO" alias="sphonevo"/>
+  
+  <typeAlias type="kr.co.kosmo.mvc.vo.SurveyVO" alias="survo"/>
+  <typeAlias type="kr.co.kosmo.mvc.vo.SurveyContentVO" alias="subvo"/>
+  
+  </typeAliases>
+  <!-- 스프링에게 위임을 한다. 
+  <environments default="">
+  <environment id="">
+  <transactionManager type="JDBC"/>
+  <dataSource type="JNDI">
+  <property name="data_source" value="java:comp/env/jdbc/myora"/>
+  </dataSource>
+  </environment>
+  </environments>
+  <mappers>
+  <mapper resource=""/>­
+  </mappers>
+  -->
+  </configuration>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="upboard">
+<insert id="add" parameterType="uvo">
+ insert into upboard values(upboard_seq.nextVal,#{sub},#{writer},#{pwd},#{cont},#{imgn},sysdate)
+</insert>
+<select id="totalCountBack" resultType="int">
+select count(*) from upboard
+</select>
+
+	<select id="listpageBack" resultType="uvo" parameterType="map">
+		select
+		* from (
+		select rownum r_num, a.* from (
+		select * from upboard order by
+		num desc
+		) a
+		) where r_num BETWEEN #{begin} and #{end}
+	</select>
+
+	<select id="totalCount" resultType="int" parameterType="pgSvo">
+		select count(*) from upboard
+		
+		<if test="searchValue != null and searchType != null">
+			<where>
+				<choose>
+					<when test="searchType == 1">
+						sub like '%'|| #{searchValue} ||'%'
+					</when>
+					<when test="searchType == 2">
+						writer like '%'|| #{searchValue} ||'%'
+					</when>
+				</choose>
+			</where>
+		</if>
+		
+	</select>
+
+	<select id="listpage" resultType="uvo" parameterType="pgSvo">
+		select num,
+
+		<if test="searchValue != null and searchType != null">
+			<choose>
+				<when test="searchType == 1">
+		     <![CDATA[ 
+		      replace(sub,#{searchValue},'<span style="color:orange; font-weight: bold;">${searchValue}</span>') sub,writer,
+		       ]]>
+				</when>
+				<when test="searchType == 2">
+		     <![CDATA[ 
+		      sub,replace(writer,#{searchValue},'<span style="color:pink; font-weight: bold;">${searchValue}</span>') writer,
+		       ]]>
+				</when>
+				<otherwise>
+					sub,writer,
+				</otherwise>
+			</choose>
+		</if>
+	
+		pwd,cont,imgn,udate from (
+		select rownum r_num, a.* from (
+		select num,sub,writer,pwd,cont,imgn,udate from upboard
+
+		<if test="searchValue != null and searchType != null">
+			<where>
+				<choose>
+					<when test="searchType == 1">
+						sub like '%'|| #{searchValue} ||'%'
+					</when>
+					<when test="searchType == 2">
+						writer like '%'|| #{searchValue} ||'%'
+					</when>
+				</choose>
+			</where>
+		</if>
+		order by num desc
+		) a
+		) where r_num BETWEEN #{begin} and #{end}
+	</select>
+
+
+<select id="detail" parameterType="int" resultType="uvo">
+select * from upboard where num=#{num}
+</select>
+
+</mapper>
